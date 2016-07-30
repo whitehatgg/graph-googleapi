@@ -15,6 +15,10 @@ const store = new KnexSessionStore({
 import { schema, resolvers } from './schema';
 import { GitHubConnector } from './github/connector';
 import { Repositories, Users } from './github/models';
+
+import { GoogleConnector } from './google/connector';
+import { Places } from './google/models';
+
 import { Entries, Comments } from './sql/models';
 
 dotenv.config({ silent: true });
@@ -25,6 +29,7 @@ if (process.env.PORT) {
 }
 
 const {
+  GOOGLE_API_KEY,
   GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET,
 } = process.env;
@@ -83,6 +88,11 @@ app.use('/graphql', apolloServer((req) => {
     clientSecret: GITHUB_CLIENT_SECRET,
   });
 
+
+  const googleConnector = new GoogleConnector({
+    apiKey: GOOGLE_API_KEY,
+  });
+
   return {
     graphiql: true,
     pretty: true,
@@ -90,6 +100,7 @@ app.use('/graphql', apolloServer((req) => {
     schema,
     context: {
       user,
+      Places: new Places({ connector: googleConnector }),
       Repositories: new Repositories({ connector: gitHubConnector }),
       Users: new Users({ connector: gitHubConnector }),
       Entries: new Entries(),

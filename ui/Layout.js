@@ -26,17 +26,18 @@ NavbarLink.propTypes = {
 
 
 function Profile({ data }) {
+  console.log(data.currentPlace);
   if (data.loading) {
     return (
       <p className="navbar-text navbar-right">
         Loading...
       </p>
     );
-  } else if (data.currentUser) {
+  } else if (data.currentPlace.status == "OK") {
     return (
       <span>
         <p className="navbar-text navbar-right">
-          {data.currentUser.login}
+          {data.currentPlace.result.name}
           &nbsp;
           <a href="/logout">Log out</a>
         </p>
@@ -74,6 +75,14 @@ const ProfileWithData = connect({
           currentUser {
             login
             avatar_url
+          }
+          currentPlace {
+            status
+            result {
+              id
+              name
+              icon
+            }
           }
         }
       `,

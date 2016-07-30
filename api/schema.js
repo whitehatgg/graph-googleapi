@@ -1,5 +1,6 @@
 import { merge } from 'lodash';
 import { schema as gitHubSchema, resolvers as gitHubResolvers } from './github/schema';
+import { schema as googleSchema, resolvers as googleResolvers } from './google/schema';
 import { schema as sqlSchema, resolvers as sqlResolvers } from './sql/schema';
 
 const rootSchema = [`
@@ -19,7 +20,8 @@ type Query {
   entry(repoFullName: String!): Entry
 
   # To display the current user on the submission page, and the navbar
-  currentUser: User
+  currentUser: User,
+  currentPlace: Place
 }
 
 # Type of vote
@@ -57,6 +59,9 @@ const rootResolvers = {
     currentUser(_, __, context) {
       return context.user;
     },
+    currentPlace(_, __, context) {
+      return context.Places.getDetailsByPlaceid('ChIJN1t_tDeuEmsRUsoyG83frY4');
+    }
   },
   Mutation: {
     submitRepository(_, { repoFullName }, context) {
@@ -115,5 +120,5 @@ const rootResolvers = {
   },
 };
 
-export const schema = [...rootSchema, ...gitHubSchema, ...sqlSchema];
-export const resolvers = merge(rootResolvers, gitHubResolvers, sqlResolvers);
+export const schema = [...rootSchema, ...gitHubSchema,...googleSchema, ...sqlSchema];
+export const resolvers = merge(rootResolvers, gitHubResolvers, googleResolvers, sqlResolvers);
